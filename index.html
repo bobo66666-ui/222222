@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fractal" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('fractal');
+        const ctx = canvas.getContext('2d');
+
+        function kochCurve(order, p1, p2) {
+            if (order === 0) {
+                // Draw a line between two points
+                ctx.beginPath();
+                ctx.moveTo(p1[0], p1[1]);
+                ctx.lineTo(p2[0], p2[1]);
+                ctx.stroke();
+            } else {
+                // Calculate intermediate points
+                const dx = p2[0] - p1[0];
+                const dy = p2[1] - p1[1];
+                const p3 = [p1[0] + dx / 3, p1[1] + dy / 3];
+                const p5 = [p1[0] + 2 * dx / 3, p1[1] + 2 * dy / 3];
+                const px = p1[0] + dx / 2 - dy * Math.sqrt(3) / 6;
+                const py = p1[1] + dy / 2 + dx * Math.sqrt(3) / 6;
+                const p4 = [px, py];
+
+                // Recursively draw smaller Koch curves
+                kochCurve(order - 1, p1, p3);
+                kochCurve(order - 1, p3, p4);
+                kochCurve(order - 1, p4, p5);
+                kochCurve(order - 1, p5, p2);
+            }
+        }
+
+        function kochSnowflake(order) {
+            // Define the initial triangle vertices
+            const p1 = [canvas.width / 3, canvas.height * 2 / 3];
+            const p2 = [canvas.width * 2 / 3, canvas.height * 2 / 3];
+            const p3 = [canvas.width / 2, canvas.height / 3];
+
+            // Set stroke style and width
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+
+            // Draw each side of the triangle
+            kochCurve(order, p1, p2);
+            kochCurve(order, p2, p3);
+            kochCurve(order, p3, p1);
+        }
+
+        // Initialize coordinate system and start drawing
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        kochSnowflake(4); // Change the order here to increase or decrease complexity
+    </script>
+</body>
+</html>
+
+
